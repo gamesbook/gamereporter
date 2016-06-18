@@ -1,0 +1,7 @@
+beautifulsoup4==4.4.1
+boardgamegeek==0.13.2
+Pillow==3.2.0
+reportlab==3.3.0
+requests==2.10.0
+requests-cache==0.4.12
+
