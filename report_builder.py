@@ -129,6 +129,7 @@ class GameReportBuilder(object):
         page_header = 'Helvetica'
         page_footer = 'Helvetica'
         try:
+            # body
             self.styles.add(ParagraphStyle(
                 name='right',
                 fontName=body,
@@ -136,8 +137,12 @@ class GameReportBuilder(object):
             self.styles.add(ParagraphStyle(
                 name='left',
                 fontName=body,
-                fontSize=9,
                 alignment=TA_LEFT))
+            self.styles.add(ParagraphStyle(
+                name='centre',
+                fontName=body,
+                alignment=TA_CENTER))
+            # header
             self.styles.add(ParagraphStyle(
                 name='CentreHeader',
                 fontName=header,
@@ -149,6 +154,7 @@ class GameReportBuilder(object):
                 name='info',
                 fontName=header,
                 alignment=TA_LEFT)),
+            # page_...
             self.styles.add(ParagraphStyle(
                 name='page_header',
                 fontName=page_header,
@@ -164,14 +170,19 @@ class GameReportBuilder(object):
             print "Unable to use or access the custom fonts!"
             sys.exit(1)
 
-    def get_image(self, path, width=1*cm):
+    def get_image(self, game, path, width=1*cm, height=None):
         """
         Create an image from a path - either on on disc or from a web URL.
         """
+        if self.progress:
+            print "Retrieving image for game: %7d" % int(game.id)
         img = ImageReader(path)
         iw, ih = img.getSize()
         aspect = ih / float(iw)
-        return Image(path, width=width, height=(width * aspect))
+        if height:
+            return Image(path, width=(height * aspect), height=height)
+        else:
+            return Image(path, width=width, height=(width * aspect))
 
     def set_header_footer(self, canvas, doc):
         """
@@ -240,6 +251,57 @@ class GameReportBuilder(object):
                       )
         return game_table
 
+    def create_table_compact(self, game):
+        """
+        Create a compact reportlab table displaying game information.
+
+        Args:
+            game: object
+                a BGGGame object (or similar) whose properties correspond to
+                game attributes e.g. name, description
+        """
+        if self.progress:
+            print "Generating table for game: %7d" % int(game.id)
+        div = self.doc.width / 7.0
+        HT = 0.6 * cm
+        # note that 'n' in div * n MUST correspond to number of cols spanned
+        game_image = self.get_image(game, path=game.image, height=HT*3 - 8)
+        table_data = [
+            [
+                game_image,
+                Paragraph('<b>%s</b>' % game.name, self.styles['info']),
+                '', '',
+                Paragraph('<b>%s</b>' % game.age, self.styles['centre']),
+                Paragraph('<b>%s</b> min' % game.playingtime, self.styles['centre']),
+                Paragraph('<b>%s</b> players' % game.players, self.styles['right']),
+                ''
+            ],
+            [
+                '', Paragraph('%s' % game.mechanics, self.styles['left']),
+                '', '', '', '', ''
+            ],
+            [
+                '', Paragraph('%s' % game.categories, self.styles['left']),
+                '', '', '', '', ''
+            ]
+        ]
+        # create the table
+        game_table = Table(table_data,
+                           colWidths=[div, div, div, div, div, div, div],
+                           rowHeights=[HT] * len(table_data))
+        game_table.setStyle(
+            TableStyle([
+                        ('BOX', (0, 0), (-1, -1), 0.5, black),
+                        ('VALIGN',(0,0), (-1,-1), 'TOP'),
+                        ('SPAN',(0,0),(0,2)),
+                        ('SPAN',(1,0),(3,0)),
+                        ('SPAN',(1,1),(6,1)),
+                        ('SPAN',(1,2),(6,2)),
+                       ]),
+                      )
+        return game_table
+
+
     def create_table(self, game):
         """
         Create a reportlab table displaying game information.
@@ -252,10 +314,8 @@ class GameReportBuilder(object):
         if self.progress:
             print "Generating table for game: %7d" % int(game.id)
         div = self.doc.width / 8.0
-        if self.progress:
-            print "Retrieving image for game: %7d" % int(game.id)
         # note that 'n' in div * n MUST correspond to number of cols spanned
-        game_image = self.get_image(path=game.image, width=div * 3 - 9)
+        game_image = self.get_image(game, path=game.image, width=div * 3 - 9)
         table_data = [
             [
                 Paragraph('<b>Ages</b>: %s' % game.age,
@@ -314,31 +374,36 @@ class GameReportBuilder(object):
         img = self.get_image(url, width)
         return img
 
-    def print_games(self, summary=False):
+    def print_games(self, style='full'):
         """
         Primary routine to drive creation of a reportlab PDF.
 
-        Elements such as paragraphs & tabled are collated in a list; and then
+        Elements such as paragraphs & tables are collated in a list; and then
         the document is created.
 
         Headers and Footer are set via the doc.build().
         """
         elements = []
-        if summary:
+        if style in ['summary', 'compact']:
             elements.append(Spacer(1, 0.5*cm))
         # Create table per game
         for number, game in enumerate(self.games):
-            if not summary:
+            if style == 'full':
                 gtable = self.create_table(game)
                 header = Paragraph('<b>%s</b>' % game.name,
                                    self.styles['CentreHeader'])
                 header.keepWithNext = True
                 elements.append(header)
                 elements.append(gtable)
-            else:
+            elif style == 'compact':
+                gtable = self.create_table_compact(game)
+                elements.append(gtable)
+            elif style == 'summary':
                 gtable = self.create_table_summary(game, number)
                 elements.append(gtable)
-
+            else:
+                print 'The table style "%s" does not exist!' % style
+                sys.exit(1)
         # After tables
         elements.append(Spacer(1, 0.5*cm))
         if self.time == 'US':
@@ -354,4 +419,3 @@ class GameReportBuilder(object):
             elements,
             onFirstPage=self.set_header_footer,
             onLaterPages=self.set_header_footer)
-

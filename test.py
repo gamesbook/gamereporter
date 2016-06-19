@@ -28,9 +28,9 @@ def parse_args():
     parser.add_argument('-p', '--progress',
                         action='store_true',
                         help='Show progress of access to games from BGG')
-    parser.add_argument('-s', '--summary',
-                        action='store_true',
-                        help='Print a summary of games, instead of details')
+    parser.add_argument(
+        '-s', '--style',
+        help='Print according to a style [summary | compact | full]')
     parser.add_argument('-f', '--file',
                         help='Name of PDF file (default: games.pdf)')
     parser.add_argument('-z', '--zone',
@@ -64,6 +64,7 @@ def main(conf):
     else:
         tzone = 'UK'
         psize = 'A4'
+    ids = []
     if conf.games:
         _ids = conf.games  # list of game ID's [421, 986, 154638]
         try:
@@ -99,10 +100,10 @@ def main(conf):
         header='AlegreyaSansSCR', body='AlegreyaR')
 
     try:
-        if conf.summary:
-            grb.print_games(summary=True)
+        if conf.style:
+            grb.print_games(style=conf.style)
         else:
-            grb.print_games()
+            grb.print_games(style='full')
     except Exception as err:
         print "\nSorry!  There was an expected error: %s" % err
 

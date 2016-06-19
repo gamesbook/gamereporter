@@ -25,7 +25,11 @@ user called `shurelock`, who is USA-based, while showing progress, uses:
 
 A summary report for the same user, but with metric options & no progress:
 
-    python test.py -u shurelock -c 5 -s
+    python test.py -u shurelock -c 5 -s summary
+    
+A compact report for the same user, but with metric options & no progress:
+
+    python test.py -u shurelock -c 5 -s compact
 
 **NOTE** `shurelock` is not a real user and so the program will fail!
     
