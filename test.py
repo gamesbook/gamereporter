@@ -44,7 +44,7 @@ def parse_args():
 
 def main(conf):
     if conf.version:
-        print "GameReportBuilder Test - Version 1.0"
+        print "GameReportBuilder Test - Version 1.1"
         sys.exit(1)
     if conf.debug:
         print "Debug is ON!"

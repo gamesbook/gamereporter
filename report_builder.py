@@ -414,7 +414,7 @@ class GameReportBuilder(object):
         elements.append(p2)
         # All done!
         if self.progress:
-            print "Generating PDF Document..."
+            print "Generating PDF Document... ... .."
         self.doc.build(
             elements,
             onFirstPage=self.set_header_footer,
