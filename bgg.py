@@ -11,6 +11,7 @@ Notes:
 # future
 from __future__ import division
 # lib
+import math
 import os
 import tempfile
 # third party
@@ -153,7 +154,8 @@ class BGGGame(object):
             self._average = self._game.average
             self.average = '%.3f' % self._game.average
             self._averageweight = self._game.averageweight
-            self.averageweight = '%.3f' % self._game.averageweight
+            self.averageweight = '%.2f' % self._game.averageweight
+            self.percentageweight = '%s' % math.ceil(self._game.averageweight * 20.0)
             self._bayesaverage = self._game.bayesaverage
             self.bayesaverage = '%.3f' % self._game.bayesaverage
             self._categories = self._game.categories
@@ -235,7 +237,7 @@ class BGGGame(object):
 
 def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
     """Return a list of games from BoardGameGeek; by ID or for a user.
-    
+
     Args:
         ids: list
             games IDs (integers) used by BGG
@@ -254,9 +256,7 @@ def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
         number = int(number)
     tmpdir = tempfile.mkdtemp()
     predictable_filename = 'bgggames.cache'
-    saved_umask = os.umask(0077)  # read/write by creator only
-    dbname = os.path.join(tmpdir, predictable_filename)    
-    #os.unlink(dbname)    
+    dbname = os.path.join(tmpdir, predictable_filename)
     bgg = BoardGameGeek(cache="sqlite://{}?ttl=1000".format(dbname),
                         disable_ssl=True)
     games = []

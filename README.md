@@ -14,7 +14,7 @@ To see the program options, run:
     python test.py --help
     
 A test, or "debug", run with progress display, but requiring no access to 
-boardgamegeek.com, with output going to a a file called `dummy.pdf`:
+boardgamegeek.com, with output going to a file called `dummy.pdf`:
 
     python test.py -d -p -f dummy.pdf
 

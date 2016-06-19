@@ -24,9 +24,9 @@ from reportlab.lib.utils import ImageReader
 from reportlab.lib.colors import black, white, slategray, slategrey, \
     lightgrey, lightslategray, lightslategrey, \
     red
-from reportlab.pdfbase import pdfmetrics 
-from reportlab.pdfbase.ttfonts import TTFont 
-from reportlab.pdfbase.pdfmetrics import registerFontFamily 
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase.pdfmetrics import registerFontFamily
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, \
     TableStyle, Image
 
@@ -38,7 +38,7 @@ BASE = os.path.join(HOME, FONTS)
 class GameReportBuilder(object):
 
     def __init__(self, *args, **kwargs):
-        self.games = kwargs.get('games', [])  # list of 'game' objects 
+        self.games = kwargs.get('games', [])  # list of 'game' objects
         self.user = kwargs.get('user', '')
         self.time = kwargs.get('time', 'UK')
         self.filename = kwargs.get('filename')
@@ -70,10 +70,10 @@ class GameReportBuilder(object):
 
     def ttf_register(self, name, family=False, base_dir=BASE):
         """
-        Register a font or a font family. 
+        Register a font or a font family.
 
         Example:
-        
+
         # http://www.1001freefonts.com/alegreya_sc.font
         pdfmetrics.registerFont(TTFont('AlegreyaSCR',
             os.path.join(base_dir, 'AlegreyaSC-Regular.ttf')))
@@ -84,14 +84,14 @@ class GameReportBuilder(object):
         pdfmetrics.registerFont(TTFont('AlegreyaSCB',
             os.path.join(base_dir, 'AlegreyaSC-Bold.ttf')))
         registerFontFamily(
-            'AlegreyaSC', normal='AlegreyaSCR', bold='AlegreyaSCB', 
+            'AlegreyaSC', normal='AlegreyaSCR', bold='AlegreyaSCB',
             italic='AlegreyaSCI', boldItalic='AlegreyaSCBI')
-            
+
         Note:
             Acrobat PDF has 14 built-in fonts, supported by reportlab:
-            Courier, Helvetica, Courier-Bold, Helvetica-Bold, Courier-Oblique, 
-            Helvetica-Oblique, Courier-BoldOblique, Helvetica-BoldOblique, 
-            Times-Roman, Times-Bold, Times-Italic, Times-BoldItalic, Symbol, 
+            Courier, Helvetica, Courier-Bold, Helvetica-Bold, Courier-Oblique,
+            Helvetica-Oblique, Courier-BoldOblique, Helvetica-BoldOblique,
+            Times-Roman, Times-Bold, Times-Italic, Times-BoldItalic, Symbol,
             ZapfDingbats
         """
         if not family:
@@ -130,33 +130,33 @@ class GameReportBuilder(object):
         page_footer = 'Helvetica'
         try:
             self.styles.add(ParagraphStyle(
-                name='right', 
-                fontName=body, 
+                name='right',
+                fontName=body,
                 alignment=TA_RIGHT))
             self.styles.add(ParagraphStyle(
-                name='left', 
+                name='left',
                 fontName=body,
                 fontSize=9,
                 alignment=TA_LEFT))
             self.styles.add(ParagraphStyle(
-                name='CentreHeader', 
+                name='CentreHeader',
                 fontName=header,
                 fontSize=14,
                 spaceBefore=3,
                 spaceAfter=4,
                 alignment=TA_CENTER))
             self.styles.add(ParagraphStyle(
-                name='info', 
+                name='info',
                 fontName=header,
                 alignment=TA_LEFT)),
             self.styles.add(ParagraphStyle(
-                name='page_header', 
+                name='page_header',
                 fontName=page_header,
                 fontSize=8,
                 spaceAfter=6,
                 alignment=TA_LEFT)),
             self.styles.add(ParagraphStyle(
-                name='page_footer', 
+                name='page_footer',
                 fontName=page_footer,
                 fontSize=9,
                 alignment=TA_RIGHT))
@@ -197,7 +197,7 @@ class GameReportBuilder(object):
     def create_table_summary(self, game, num):
         """
         Create a reportlab table displaying summarised game information.
-        
+
         Args:
             game: object
                 a BGGGame object (or similar) whose properties correspond to
@@ -209,7 +209,9 @@ class GameReportBuilder(object):
         table_data = [
             [
                 Paragraph('<b>%s</b>' % game.name, self.styles['left']),
-                Paragraph('<b>%s</b>' % game.id, self.styles['left']),
+                Paragraph('<b>%s (%s)</b>' %
+                          (game.averageweight, game.percentageweight),
+                          self.styles['left']),
                 Paragraph('<b>%s</b>' % game.yearpublished, self.styles['left']),
                 Paragraph('<b>%s</b>' % game.age, self.styles['left']),
                 Paragraph('<b>%s</b>' % game.playingtime, self.styles['left']),
@@ -217,10 +219,10 @@ class GameReportBuilder(object):
             ]
         ]
         if num == 0:
-            table_data.insert(0, 
+            table_data.insert(0,
                 [
                     Paragraph('<b>Name</b>', self.styles['info']),
-                    Paragraph('<b>ID</b>', self.styles['left']),
+                    Paragraph('<b>Weight (%)</b>', self.styles['left']),
                     Paragraph('<b>Year</b>', self.styles['left']),
                     Paragraph('<b>Age</b>', self.styles['left']),
                     Paragraph('<b>Time</b>', self.styles['left']),
@@ -228,7 +230,7 @@ class GameReportBuilder(object):
                 ]
             )
         # create the table
-        game_table = Table(table_data, 
+        game_table = Table(table_data,
                            colWidths=[div*2, div, div, div, div, div])
         game_table.setStyle(
             TableStyle([
@@ -241,7 +243,7 @@ class GameReportBuilder(object):
     def create_table(self, game):
         """
         Create a reportlab table displaying game information.
-        
+
         Args:
             game: object
                 a BGGGame object (or similar) whose properties correspond to
@@ -256,10 +258,10 @@ class GameReportBuilder(object):
         game_image = self.get_image(path=game.image, width=div * 3 - 9)
         table_data = [
             [
-                Paragraph('<b>Ages</b>: %s' % game.age, 
+                Paragraph('<b>Ages</b>: %s' % game.age,
                           self.styles['info']),
                 '',
-                Paragraph('<b>Published</b>: %s' % game.yearpublished, 
+                Paragraph('<b>Published</b>: %s' % game.yearpublished,
                           self.styles['info']),
                 '',
                 Paragraph('<b>Time</b>: %s min' % game.playingtime, self.styles['info']),
@@ -283,7 +285,7 @@ class GameReportBuilder(object):
             ]
         ]
         # create the table
-        game_table = Table(table_data, 
+        game_table = Table(table_data,
                            colWidths=[div, div, div, div, div, div, div, div])
         game_table.setStyle(
             TableStyle([
@@ -315,10 +317,10 @@ class GameReportBuilder(object):
     def print_games(self, summary=False):
         """
         Primary routine to drive creation of a reportlab PDF.
-        
+
         Elements such as paragraphs & tabled are collated in a list; and then
         the document is created.
-        
+
         Headers and Footer are set via the doc.build().
         """
         elements = []
@@ -328,7 +330,7 @@ class GameReportBuilder(object):
         for number, game in enumerate(self.games):
             if not summary:
                 gtable = self.create_table(game)
-                header = Paragraph('<b>%s</b>' % game.name, 
+                header = Paragraph('<b>%s</b>' % game.name,
                                    self.styles['CentreHeader'])
                 header.keepWithNext = True
                 elements.append(header)
@@ -336,7 +338,7 @@ class GameReportBuilder(object):
             else:
                 gtable = self.create_table_summary(game, number)
                 elements.append(gtable)
-                
+
         # After tables
         elements.append(Spacer(1, 0.5*cm))
         if self.time == 'US':
@@ -349,7 +351,7 @@ class GameReportBuilder(object):
         if self.progress:
             print "Generating PDF Document..."
         self.doc.build(
-            elements, 
-            onFirstPage=self.set_header_footer, 
+            elements,
+            onFirstPage=self.set_header_footer,
             onLaterPages=self.set_header_footer)
 

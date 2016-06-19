@@ -6,12 +6,16 @@ Purpose:
     Supply game-like objects that can be used to test GameReportBuilder without
     requiring access to boardgamegeek.com
 """
+import math
+
 
 class Game(object):
 
     def __init__(self, item):
     
         self.id = item.get('id', 0)
+        self.averageweight = '%.2f' % item.get('averageweight', 0.0)
+        self.percentageweight = '%s' % math.ceil(item.get('averageweight', 0.0) * 20.0)
         self.name = item.get('name', 'NAME?')
         self.description = item.get('desc', 'NAME?')
         self.description_html = item.get('desc', 'NAME?').\
@@ -30,6 +34,7 @@ class Game(object):
 game1 = {
 'name': '1830',
 'id': 421,
+'averageweight': 4.13,
 'image': 'dummy/1830.png',
 'desc': """1830 is one of the most famous 18xx games. One of the things some gamers like about this game is that the game has 'no chance' element. That is to say, if players wished to play two games with the same moves, the outcome would be the same also.
 
@@ -46,6 +51,7 @@ The 2011 version of 1830 was published by Mayfair Games in partnership with Look
 game2 = {
 'name': 'Babel',
 'id': 986,
+'averageweight': 2.40,
 'image': 'dummy/babel.png',
 'desc': """In Babel, each player makes use of members of various tribes of the ancient world to build temples, exploit (or exterminated) their opponent's work force, destroy or steal their opponent's temples and otherwise do whatever it takes to build the tallest temples to win the game.
 
@@ -64,6 +70,7 @@ Game play progresses until one of two conditions is met: if a player builds 15 p
 game3 = {
 'name': '7 Wonders: Babel',
 'id': 154638,
+'averageweight': 2.62,
 'image': 'dummy/babel7.png',
 'desc': """[i]7 Wonders: Babel[/i] includes two modules for use with the 7 Wonders base game, and they can be used individually or together in any combination with other expansions. 
 

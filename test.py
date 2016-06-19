@@ -3,7 +3,7 @@
 Author: Derek Hohls
 Date: June 2016
 Purpose:
-    Demonstrate use of GameReportBuilder module  
+    Demonstrate use of GameReportBuilder module
 """
 import argparse
 import sys
@@ -37,8 +37,8 @@ def parse_args():
                         help='Use US to get USA date/times and paper-sizes')
     parser.add_argument('-c', '--count',
                         help='Number of games to retrieve (default: 10)')
-    parser.add_argument('-g','--games', nargs='+', 
-                        help='List of game IDs (ignored if a user is supplied)')
+    parser.add_argument('-g', '--games', nargs='+',
+                        help='List of game IDs (ignored if user is supplied)')
     return parser.parse_args()
 
 
@@ -48,7 +48,7 @@ def main(conf):
         sys.exit(1)
     if conf.debug:
         print "Debug is ON!"
-        DEBUG = True #True #
+        DEBUG = True
     else:
         DEBUG = False
     username = conf.user
@@ -64,12 +64,14 @@ def main(conf):
     else:
         tzone = 'UK'
         psize = 'A4'
-    _ids = conf.games  # list of game ID's [421, 986, 154638]
-    try:
-        ids = [int(gid) for gid in _ids]
-    except:
-        print "The game ID's are incorrect in some way - they must all be numbers!"
-        sys.exit(1)
+    if conf.games:
+        _ids = conf.games  # list of game ID's [421, 986, 154638]
+        try:
+            ids = [int(gid) for gid in _ids]
+        except:
+            print "The game ID's are incorrect in some way -"\
+                  " they must all be numbers!"
+            sys.exit(1)
     # FONTS available from:
     # http://www.1001freefonts.com/alegreya_sc.font
     # https://fontlibrary.org/en/font/alegreya
@@ -87,11 +89,12 @@ def main(conf):
                 games = bgg_games(
                     user=username, number=count, progress=conf.progress)
         except BoardGameGeekAPIError:
-            print "Sorry - there was a problem accessing BGG (also check your game ID's)"
+            print "Sorry - there was a problem accessing BGG"\
+                  " (also check your game ID's)"
             sys.exit(1)
 
     grb = GameReportBuilder(
-        user=username, games=games, filename=pdf_file, familys=font_family, 
+        user=username, games=games, filename=pdf_file, familys=font_family,
         time=tzone, margin=36, size=psize, progress=conf.progress,
         header='AlegreyaSansSCR', body='AlegreyaR')
 
@@ -102,9 +105,8 @@ def main(conf):
             grb.print_games()
     except Exception as err:
         print "\nSorry!  There was an expected error: %s" % err
-    
+
 
 if __name__ == "__main__":
     conf = parse_args()
     main(conf)
-
