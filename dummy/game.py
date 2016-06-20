@@ -12,7 +12,7 @@ import math
 class Game(object):
 
     def __init__(self, item):
-    
+
         self.id = item.get('id', 0)
         self.averageweight = '%.2f' % item.get('averageweight', 0.0)
         self.percentageweight = '%s' % math.ceil(item.get('averageweight', 0.0) * 20.0)
@@ -24,17 +24,20 @@ class Game(object):
         self.categories =  item.get('categories', '???')
         self.mechanics =  item.get('mechanics', '???')
         self.players =  item.get('players', '1-100')
+        self.minplayers =  item.get('minplayers', '1')
+        self.maxplayers =  item.get('maxplayers', '1')
         self.age =  item.get('age', '1+')
-        self.yearpublished =  item.get('yearpublished', '0000')
-        self.playingtime =  item.get('playingtime', '60')
+        self.yearpublished =  item.get('yearpublished', '1000')
+        self.playingtime =  item.get('playingtime', '100')
 
 
 # example games - ALL text and images sourced from http://www.boardgamegeek.com
 
 game1 = {
-'name': '1830',
+'name': 'Descent: Journeys in the Dark (Second Edition) - Labyrinth of Ruin',
 'id': 421,
 'averageweight': 4.13,
+'percentageweight': 82.6,
 'image': 'dummy/1830.png',
 'desc': """1830 is one of the most famous 18xx games. One of the things some gamers like about this game is that the game has 'no chance' element. That is to say, if players wished to play two games with the same moves, the outcome would be the same also.
 
@@ -44,6 +47,8 @@ The 2011 version of 1830 was published by Mayfair Games in partnership with Look
 'categories': 'Economic, Trains, Transportation',
 'mechanics': 'Auction/Bidding, Route/Network Building, Stock Holding, Tile Placement',
 'players': '2-5',
+'minplayers': 2,
+'maxplayers': 5,
 'age': '12+',
 'yearpublished': '1986',
 'playingtime': '240'}
@@ -52,6 +57,7 @@ game2 = {
 'name': 'Babel',
 'id': 986,
 'averageweight': 2.40,
+'percentageweight': 48.0,
 'image': 'dummy/babel.png',
 'desc': """In Babel, each player makes use of members of various tribes of the ancient world to build temples, exploit (or exterminated) their opponent's work force, destroy or steal their opponent's temples and otherwise do whatever it takes to build the tallest temples to win the game.
 
@@ -63,6 +69,8 @@ Game play progresses until one of two conditions is met: if a player builds 15 p
 'categories': 'Ancient, Card Game, City Building',
 'mechanics': 'Hand Management, Set Collection',
 'players': '2-4',
+'minplayers': 2,
+'maxplayers': 4,
 'age': '10+',
 'yearpublished': '2012',
 'playingtime': '45'}
@@ -71,19 +79,22 @@ game3 = {
 'name': '7 Wonders: Babel',
 'id': 154638,
 'averageweight': 2.62,
+'percentageweight': 52.4,
 'image': 'dummy/babel7.png',
-'desc': """[i]7 Wonders: Babel[/i] includes two modules for use with the 7 Wonders base game, and they can be used individually or together in any combination with other expansions. 
+'desc': """[i]7 Wonders: Babel[/i] includes two modules for use with the 7 Wonders base game, and they can be used individually or together in any combination with other expansions.
 
-In one half of [i]7 Wonders: Babel[/i], players draft quarter-circle tiles at the start of the game prior to drafting anything else; each tile depicts a law that affects all players should it be put into play, e.g., all single resource cards provide an infinite number of resources each turn, or winners in military conflicts receive fewer points than normal. 
+In one half of [i]7 Wonders: Babel[/i], players draft quarter-circle tiles at the start of the game prior to drafting anything else; each tile depicts a law that affects all players should it be put into play, e.g., all single resource cards provide an infinite number of resources each turn, or winners in military conflicts receive fewer points than normal.
 
-During the game, players now have an additional option when discarding a card. Instead of gaining three coins, they place one of these tiles in the next open space on a circular display; the law on this tile remains in effect until the end of the game or until it's covered. (Should a fifth tile be placed, for example, it's placed on top of the first tile played.) At the end of the game, players receive points based on how many tiles they played. 
+During the game, players now have an additional option when discarding a card. Instead of gaining three coins, they place one of these tiles in the next open space on a circular display; the law on this tile remains in effect until the end of the game or until it's covered. (Should a fifth tile be placed, for example, it's placed on top of the first tile played.) At the end of the game, players receive points based on how many tiles they played.
 
-In the second half of [i]7 Wonders: Babel[/i], one of five age specific great project cards is randomly revealed at the start of each age, and a number of tokens are placed on it, based on the number of players. This card imposes a tax on players who want to play cards of a certain color. When a player pays this tax, he takes one of the tokens from this law card. At the end of the age, if all of the tokens have been removed, then players receive a bonus (which is depicted on the card) for each token they have; if tokens remain on the card, then each player without a token is penalized. 
+In the second half of [i]7 Wonders: Babel[/i], one of five age specific great project cards is randomly revealed at the start of each age, and a number of tokens are placed on it, based on the number of players. This card imposes a tax on players who want to play cards of a certain color. When a player pays this tax, he takes one of the tokens from this law card. At the end of the age, if all of the tokens have been removed, then players receive a bonus (which is depicted on the card) for each token they have; if tokens remain on the card, then each player without a token is penalized.
 
 Just as the cost of cards increases in each age, the number of resources required to pay the tax also increases.""",
 'categories': 'Ancient, Card Game, City Building',
 'mechanics': 'Hand Management, Set Collection',
 'players': '2-2',
+'minplayers': 2,
+'maxplayers': 2,
 'age': '10+',
 'yearpublished': '2015',
 'playingtime': '30'}
@@ -95,5 +106,5 @@ def get_games():
     for game in games:
         dummy = Game(game)
         items.append(dummy)
-    return items        
+    return items
 

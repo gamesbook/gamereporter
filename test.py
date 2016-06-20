@@ -30,9 +30,9 @@ def parse_args():
                         help='Show progress of access to games from BGG')
     parser.add_argument(
         '-s', '--style',
-        help='Print according to a style [summary | compact | full]')
+        help='Print according to a style [summary | compact | full | excel]')
     parser.add_argument('-f', '--file',
-                        help='Name of PDF file (default: games.pdf)')
+                        help='Name of PDF file (default: games.pdf/xls)')
     parser.add_argument('-z', '--zone',
                         help='Use US to get USA date/times and paper-sizes')
     parser.add_argument('-c', '--count',
@@ -56,7 +56,9 @@ def main(conf):
         count = int(conf.count)
     except:
         count = 10
-    pdf_file = conf.file or 'games.pdf'
+    out_file = conf.file or 'games.pdf'
+    if conf.style and conf.style == 'excel':
+        out_file = conf.file or 'games.xls'
     zone = conf.zone or 'UK'
     if zone == 'US':
         tzone = 'US'
@@ -95,7 +97,7 @@ def main(conf):
             sys.exit(1)
 
     grb = GameReportBuilder(
-        user=username, games=games, filename=pdf_file, familys=font_family,
+        user=username, games=games, filename=out_file, familys=font_family,
         time=tzone, margin=36, size=psize, progress=conf.progress,
         header='AlegreyaSansSCR', body='AlegreyaR')
 

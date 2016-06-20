@@ -1,13 +1,20 @@
 # About
 
-**gamereporter** allows you to generate a PDF report for a list of game-like
-objects - typically boardgames whose data is sourced from 
+**gamereporter** allows you to generate reports for a list of game-like
+objects - typically boardgames whose data can be sourced from 
 [boardgamegeek](http://www.boardgamegeek.com).
+
+# Background
+
+Many boardgame owners use the [boardgamegeek](http://www.boardgamegeek.com) database
+to track their games.  Extracting information out of the site, in a readable 
+format, is not always straightforward.  This program allows the generation of 
+such reports, to a varying degree of customisation.
 
 # Usage
 
-The `test.py` program can be used to generate a PDF report of game details, or
-a game summary (by default, into a file called `games.pdf`).
+The `test.py` program can be used to generate a report of game details, or
+a game summary (by default, into a file called `games.pdf`, or `games.xls`).
 
 To see the program options, run:
 
@@ -18,30 +25,35 @@ boardgamegeek.com, with output going to a file called `dummy.pdf`:
 
     python test.py -d -p -f dummy.pdf
 
-A 'real' example, to create a detailed game report of 5 games for a boardgamegeek 
+A 'real' example, to create a detailed PF report of 5 games for a boardgamegeek 
 user called `shurelock`, who is USA-based, while showing progress, uses:
 
     python test.py -u shurelock -z US -c 5 -p
 
-A summary report for the same user, but with metric options & no progress:
+A summary PDF report for the same user, but with metric options & no progress:
 
     python test.py -u shurelock -c 5 -s summary
     
-A compact report for the same user, but with metric options & no progress:
+A compact PDF report for the same user, but with metric options & no progress:
 
     python test.py -u shurelock -c 5 -s compact
+    
+An XLS report for the same user, with progress:
+
+    python test.py -u shurelock -c 5 -s excel -p
 
 **NOTE** `shurelock` is not a real user and so the program will fail!
     
-If you know the games you want a report on, pass in their numbers as a list:
+If you know the games you want to get a report on, pass in their boardgamegeek
+identity numbers as a list (with a space between each number); for example:
 
     python test.py -p -g 421 154638 986 320
 
 # Features
 
 - Access games by ID from boardgamegeek, or games linked to a user of that site
-- Create a PDF with details of each game accessed
-- Provide a summary table of games
+- Create different types of PDFs with details of each game accessed
+- Create an XLS file with summary of each game accessed
 - Provide some basic parameters (such as fonts and page sizes to be used)
 
 The existing code can, of course, be modified to create other layouts and report
@@ -72,6 +84,7 @@ Lots of thanks go to the authors and developers of the following Python
 libraries for making it even possible to create such a reporting tool:
 - [`boardgamegeek`](https://github.com/lcosmin/boardgamegeek)
 - [`reportlab`](http://www.reportlab.com/opensource/)
+- [`xlwt`](https://pypi.python.org/pypi/xlwt)
 
 Also, thanks to the creator of the amazingly attractive Alegreya fonts - 
  Juan Pablo del Peral!

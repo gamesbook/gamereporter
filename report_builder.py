@@ -11,9 +11,12 @@ Notes:
     * reportlab
 """
 # lib
+from collections import OrderedDict
 import os
 import sys
 import time
+# other
+import xlwt
 # reportlab
 from reportlab.pdfgen import canvas
 from reportlab.lib.enums import TA_RIGHT, TA_LEFT, TA_CENTER, TA_JUSTIFY
@@ -205,6 +208,37 @@ class GameReportBuilder(object):
         # Release the canvas
         canvas.restoreState()
 
+    def create_xls(self):
+        """
+        Create an XLS spreadsheet displaying games' details; one game per row
+        """
+        workbook = xlwt.Workbook()
+        sheet = workbook.add_sheet("Summary")
+        sheet.col(0).width = 256 * 60
+        bold_style = xlwt.easyxf('font: bold 1')
+        _items = (
+            ('Name', 'name'),
+            ('ID', 'id'),
+            ('Weight', 'averageweight'),
+            ('% Weight', 'percentageweight'),
+            ('Year', 'yearpublished'),
+            ('Age', 'age'),
+            ('Time', 'playingtime'),
+            ('Min.', 'minplayers'),
+            ('Max', 'maxplayers'),
+            ('Mechanics', 'mechanics'),
+            ('Categories', 'categories'),
+        )
+        items = OrderedDict(_items)
+        for col, head in enumerate(items.keys()):
+            sheet.write(0, col, head, bold_style)
+        for number, game in enumerate(self.games):
+            if self.progress:
+                print "Creating the row for game: %7d" % int(game.id)
+                for col, head in enumerate(items.keys()):
+                    sheet.write(number + 1, col, getattr(game, items[head]))
+        workbook.save(self.filename)
+
     def create_table_summary(self, game, num):
         """
         Create a reportlab table displaying summarised game information.
@@ -216,6 +250,7 @@ class GameReportBuilder(object):
         """
         if self.progress:
             print "Generating summary table for game: %7d" % int(game.id)
+            print "Generating a summary row for game: %7d" % int(game.id)
         div = self.doc.width / 7.0
         table_data = [
             [
@@ -261,11 +296,15 @@ class GameReportBuilder(object):
                 game attributes e.g. name, description
         """
         if self.progress:
-            print "Generating table for game: %7d" % int(game.id)
+            print "Generating table for game: %7d" % (int(game.id))
         div = self.doc.width / 7.0
         HT = 0.6 * cm
         # note that 'n' in div * n MUST correspond to number of cols spanned
-        game_image = self.get_image(game, path=game.image, height=HT*3 - 8)
+        if 'geekdo-images' in game.image:
+            _image = game.image.replace('.jpg', '_sq.jpg').replace('.png', '_sq.png')
+        else:
+            _image = game.image
+        game_image = self.get_image(game, path=_image, height=HT*3 - 8)
         table_data = [
             [
                 game_image,
@@ -273,8 +312,7 @@ class GameReportBuilder(object):
                 '', '',
                 Paragraph('<b>%s</b>' % game.age, self.styles['centre']),
                 Paragraph('<b>%s</b> min' % game.playingtime, self.styles['centre']),
-                Paragraph('<b>%s</b> players' % game.players, self.styles['right']),
-                ''
+                Paragraph('<b>%s</b> players' % game.players, self.styles['right'])
             ],
             [
                 '', Paragraph('%s' % game.mechanics, self.styles['left']),
@@ -315,7 +353,11 @@ class GameReportBuilder(object):
             print "Generating table for game: %7d" % int(game.id)
         div = self.doc.width / 8.0
         # note that 'n' in div * n MUST correspond to number of cols spanned
-        game_image = self.get_image(game, path=game.image, width=div * 3 - 9)
+        if 'geekdo-images' in game.image:
+            _image = game.image.replace('.jpg', '_md.jpg').replace('.png', '_md.png')
+        else:
+            _image = game.image
+        game_image = self.get_image(game, path=_image, width=div * 3 - 9)
         table_data = [
             [
                 Paragraph('<b>Ages</b>: %s' % game.age,
@@ -386,36 +428,40 @@ class GameReportBuilder(object):
         elements = []
         if style in ['summary', 'compact']:
             elements.append(Spacer(1, 0.5*cm))
-        # Create table per game
-        for number, game in enumerate(self.games):
-            if style == 'full':
-                gtable = self.create_table(game)
-                header = Paragraph('<b>%s</b>' % game.name,
-                                   self.styles['CentreHeader'])
-                header.keepWithNext = True
-                elements.append(header)
-                elements.append(gtable)
-            elif style == 'compact':
-                gtable = self.create_table_compact(game)
-                elements.append(gtable)
-            elif style == 'summary':
-                gtable = self.create_table_summary(game, number)
-                elements.append(gtable)
-            else:
-                print 'The table style "%s" does not exist!' % style
-                sys.exit(1)
-        # After tables
-        elements.append(Spacer(1, 0.5*cm))
-        if self.time == 'US':
-            _date = time.strftime("%b %d, %Y %H:%M")
-        else:
-            _date = time.strftime("%Y-%m-%d %H:%M")
-        p2 = Paragraph('Printed at %s' % _date, self.styles['right'])
-        elements.append(p2)
         # All done!
-        if self.progress:
-            print "Generating PDF Document... ... .."
-        self.doc.build(
-            elements,
-            onFirstPage=self.set_header_footer,
-            onLaterPages=self.set_header_footer)
+        if style in ['full', 'compact', 'summary']:
+            # Create table per game
+            for number, game in enumerate(self.games):
+                if style == 'full':
+                    gtable = self.create_table(game)
+                    header = Paragraph('<b>%s</b>' % game.name,
+                                       self.styles['CentreHeader'])
+                    header.keepWithNext = True
+                    elements.append(header)
+                    elements.append(gtable)
+                elif style == 'compact':
+                    gtable = self.create_table_compact(game)
+                    elements.append(gtable)
+                elif style == 'summary':
+                    gtable = self.create_table_summary(game, number)
+                    elements.append(gtable)
+            # After tables
+            elements.append(Spacer(1, 0.5*cm))
+            if self.time == 'US':
+                _date = time.strftime("%b %d, %Y %H:%M")
+            else:
+                _date = time.strftime("%Y-%m-%d %H:%M")
+            p2 = Paragraph('Printed at %s' % _date, self.styles['right'])
+            elements.append(p2)
+            if self.progress:
+                print "Generating PDF Document... ... .."
+            self.doc.build(
+                elements,
+                onFirstPage=self.set_header_footer,
+                onLaterPages=self.set_header_footer)
+        elif style == 'excel':
+            print "Generating XLS Spreadsheet ... ..."
+            self.create_xls()
+        else:
+            print 'The table style "%s" does not exist!' % style
+            sys.exit(1)
