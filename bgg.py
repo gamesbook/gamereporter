@@ -247,8 +247,7 @@ def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
             games IDs (integers) used by BGG
         user: string
             BGG user name; if supplied, then :
-            * IDs will be ignored;
-            * only "owned" games will be created
+            * IDs will be ignored
         number: integer
             max no. of valid games to retrieve; default is 10
         progress: boolean
@@ -284,9 +283,7 @@ def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
             if progress:
                 print "Retrieving game %7d from BGG !" % game_id
             _game = BGGGame(game_id=game_id)
-            owned = False if (user and _game._owned is not True) else True
-            #if progress:
-            #    print "Owned? ", owned, '::', _game._owned, type(_game._owned)
+            # TODO - find out a way to filter by user.owned ...
             flag = True
             if flag:
                 games.append(_game)
