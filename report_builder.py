@@ -44,7 +44,7 @@ class GameReportBuilder(object):
 
     def __init__(self, *args, **kwargs):
         __version_info__ = ('1', '0', '0')
-        self.__version__ = __version__
+        self.__version__ = __version_info__
         self.games = kwargs.get('games', [])  # list of 'game' objects
         self.user = kwargs.get('user', '')
         self.time = kwargs.get('time', 'UK')
@@ -470,7 +470,7 @@ class GameReportBuilder(object):
             p2 = Paragraph('Printed at %s' % _date, self.styles['right'])
             elements.append(p2)
             if self.progress:
-                print "Generating PDF Document... ... .."
+                print "Generating PDF Document... ... ..."
             self.doc.build(
                 elements,
                 onFirstPage=self.set_header_footer,

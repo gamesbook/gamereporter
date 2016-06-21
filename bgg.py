@@ -11,6 +11,7 @@ Notes:
 # future
 from __future__ import division
 # lib
+import json
 import math
 import os
 import tempfile
@@ -128,8 +129,8 @@ class BGGGame(object):
             print
         self.set_properties()
 
-    def get_description_short(self):
-        """Create an abbreviated description for a game."""
+    def get_description_custom(self):
+        """Create a custom, abbreviated description for a game."""
         if self._game:
             desc = self._game.description[0:self.short]
             _cut = int(
@@ -143,7 +144,7 @@ class BGGGame(object):
         """Changes the BGG [] notation to <> and adds line breaks"""
         #print "bgg.self._game.description\n", self._game.description
         return self._game.description.replace('[', '<').replace(']', '>').\
-            replace('\n','<br/>')
+            replace('\n', '<br/>')
 
     def set_properties(self):
         """Create both raw (_ prefix) and string formatted versions of props"""
@@ -165,9 +166,13 @@ class BGGGame(object):
             self.description = '%s' % self._game.description
             self.description_html = '%s' % \
                 self.HTML_description(self._game.description)
-            self.description_short = '%s' % self._game.description_short
-            self.description_short_html = '%s' % \
-                self.HTML_description(self._game.description_short)
+            try:
+                self.description_short = '%s' % self._game.description_short
+                self.description_short_html = '%s' % \
+                    self.HTML_description(self._game.description_short)
+            except AttributeError:
+                self.description_short = ''
+                self.description_short_html = ''
             self._designers = self._game.designers
             self.designers = ', '.join(self._game.designers)
             self._expands = self._game.expands
@@ -176,7 +181,7 @@ class BGGGame(object):
             if self._game.expansion is True:
                 self.expansion = 'Yes'
             else:
-                self.expansion = 'False'
+                self.expansion = 'No'
             self._expansions = self._game.expansions
             self.expansions = ', '.join(
                 [exp.name for exp in self._game.expansions])
@@ -227,8 +232,8 @@ class BGGGame(object):
             self._yearpublished = self._game.yearpublished
             self.yearpublished = '%s' % self._game.yearpublished
             # custom fields
-            self.description_short = self.get_description_short()
-            self._description_short = self.description_short
+            self.description_custom = self.get_description_custom()
+            self._description_custom = self.description_custom
             if self._game.minplayers == self._game.maxplayers:
                     self.players = '%s' % self._game.maxplayers
             else:
@@ -239,8 +244,135 @@ class BGGGame(object):
             self._age = self._game.minage
 
 
-def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
-    """Return a list of BoardGameGeek games; source by ID or by user.
+class GameObject(object):
+
+    def __init__(self, game_dict, short=500):
+        """
+        Args:
+            short: int
+                number of characters to use for short description
+        """
+        self.game_dict = game_dict
+        self.short = int(short) or 500
+        self.set_properties(self.game_dict)
+
+    def get_description_custom(self):
+        """Create a custom, abbreviated description for a game."""
+        if self.game_dict:
+            desc = self.game_dict.get('_description', '')[0:self.short]
+            _cut = int(
+                (len(desc) -
+                 len(desc.replace(',', '').replace('.', '').replace(':', '')))
+                / 2 + self.short)
+            desc = self.game_dict.get('_description', '')[0:_cut]
+            return desc[0:-3] + '...'
+
+    def HTML_description(self, text):
+        """Changes the BGG [] notation to <> and adds line breaks"""
+        #print "bgg.self._game.description\n", self._game.description
+        return self.game_dict.get('_description', '').replace('[', '<').\
+            replace(']', '>').replace('\n', '<br/>')
+
+    def set_properties(self, game_dict):
+        """Create both raw (_ prefix) and string formatted versions of props"""
+        if game_dict:
+            self._alternative_names = game_dict.get('_alternative_names')
+            self.alternative_names = ', '.join(game_dict.get('alternative_names'))
+            self._artists = game_dict.get('_artists')
+            self.artists = ', '.join(game_dict.get('artists'))
+            self._average = game_dict.get('_average')
+            self.average = '%.3f' % game_dict.get('_average')
+            self._averageweight = game_dict.get('_averageweight')
+            self.averageweight = '%.2f' % game_dict.get('_averageweight')
+            self.percentageweight = \
+                '%s' % math.ceil(game_dict.get('_averageweight') * 20.0)
+            self._bayesaverage = game_dict.get('_bayesaverage')
+            self.bayesaverage = '%.3f' % game_dict.get('_bayesaverage')
+            self._categories = game_dict.get('_categories')
+            self.categories = ', '.join(game_dict.get('_categories'))
+            self._description = game_dict.get('_description')
+            self.description = '%s' % game_dict.get('_description')
+            self.description_html = '%s' % \
+                self.HTML_description(game_dict.get('_description'))
+            self.description_short = '%s' % game_dict.get('_description_short')
+            self.description_short_html = '%s' % \
+                self.HTML_description(game_dict.get('_description_short'))
+            self._designers = game_dict.get('_designers')
+            self.designers = ', '.join(game_dict.get('_designers'))
+            self._expands = game_dict.get('_expands')
+            self.expands = \
+                ', '.join([exp.name for exp in game_dict.get('_expands')])
+            self._expansion = game_dict.get('_expansion')
+            if game_dict.get('_expansion') is True:
+                self.expansion = 'Yes'
+            else:
+                self.expansion = 'No'
+            self._expansions = game_dict.get('_expansions')
+            self.expansions = ', '.join(
+                [exp.name for exp in game_dict.get('_expansions')])
+            self._families = game_dict.get('_families')
+            self.families = ', '.join(game_dict.get('_families'))
+            self._id = game_dict.get('_id')
+            self.id = '%s' % game_dict.get('_id')
+            self._image = game_dict.get('_image')
+            self.image = '%s' % game_dict.get('_image')
+            self._implementations = game_dict.get('_implementations')
+            self.implementations = ', '.join(game_dict.get('_implementations'))
+            self._maxplayers = game_dict.get('_maxplayers')
+            self.maxplayers = '%s' % game_dict.get('_maxplayers')
+            self._mechanics = game_dict.get('_mechanics')
+            self.mechanics = ', '.join(game_dict.get('_mechanics'))
+            self._median = game_dict.get('_median')
+            self.median = '%.3f' % game_dict.get('_median')
+            self._minage = game_dict.get('_minage')
+            self.minage = '%s' % game_dict.get('_minage')
+            self._minplayers = game_dict.get('_minplayers')
+            self.minplayers = '%s' % game_dict.get('_minplayers')
+            self._name = game_dict.get('_name')
+            self.name = '%s' % game_dict.get('_name')
+            self._numcomments = game_dict.get('_numcomments')
+            self.numcomments = '%s' % game_dict.get('_numcomments')
+            self._numweights = game_dict.get('_numweights')
+            self.numweights = '%s' % game_dict.get('_numweights')
+            self._owned = game_dict.get('_owned')
+            self.owned = '%s' % game_dict.get('_owned')
+            self._playingtime = game_dict.get('_playingtime')
+            self.playingtime = '%s' % game_dict.get('_playingtime')
+            self._publishers = game_dict.get('_publishers')
+            self.publishers = ', '.join(game_dict.get('_publishers'))
+            self._ranks = game_dict.get('_ranks')
+            self.ranks = '%s' % game_dict.get('_ranks')
+            self._stddev = game_dict.get('_stddev')
+            self.stddev = '%.3f' % game_dict.get('_stddev')
+            self._thumbnail = game_dict.get('_thumbnail')
+            self.thumbnail = '%s' % game_dict.get('_thumbnail')
+            self._trading = game_dict.get('_trading')
+            self.trading = '%s' % game_dict.get('_trading')
+            self._usersrated = game_dict.get('_usersrated')
+            self.usersrated = '%s' % game_dict.get('_usersrated')
+            self._wanting = game_dict.get('_wanting')
+            self.wanting = '%s' % game_dict.get('_wanting')
+            self._wishing = game_dict.get('_wishing')
+            self.wishing = '%s' % game_dict.get('_wishing')
+            self._yearpublished = game_dict.get('_yearpublished')
+            self.yearpublished = '%s' % game_dict.get('_yearpublished')
+            # custom fields
+            self.description_custom = self.get_description_custom()
+            self._description_custom = self.description_custom
+            if game_dict.get('_minplayers') == game_dict.get('_maxplayers'):
+                    self.players = '%s' % game_dict.get('_maxplayers')
+            else:
+                self.players = '%s-%s' % (game_dict.get('_minplayers'),
+                                          game_dict.get('_maxplayers'))
+            self._players = (game_dict.get('_minplayers'),
+                             game_dict.get('_maxplayers'))
+            self.age = '%s+' % game_dict.get('_minage')
+            self._age = game_dict.get('_minage')
+
+
+def bgg_games(ids=None, user=None, filename=None, number=None, progress=False,
+              **kwargs):
+    """Return a list of BoardGameGeek games; sourced by ID, or user, or file
 
     Args:
         ids: list
@@ -248,6 +380,8 @@ def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
         user: string
             BGG user name; if supplied, then :
             * IDs will be ignored
+        filename: string
+            name of file containing game data saved in JSON format
         number: integer
             max no. of valid games to retrieve; default is 10
         progress: boolean
@@ -265,17 +399,26 @@ def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
     games = []
     if user:
         ids = []
-        bgg_user = bgg.user(user)
+        #bgg_user = bgg.user(user)
         try:
             collection = bgg.collection(user)
             if collection:
                 for game in collection:
                     ids.append(game.id)
             else:
-                print 'Unable to retrieve collection for %s - do they exist?' % user
+                print 'Unable to retrieve collection for %s - do they exist?' \
+                    % user
         except BoardGameGeekAPIRetryError, err:
             print err
-    if ids:
+    if filename:
+        try:
+            with open(filename) as json_file:
+                json_games = json.load(json_file)
+            for game_id in json_games.keys():
+                games.append(GameObject(json_games[game_id]))
+        except ValueError:
+            print 'Unable to load data from "%s" - please check it.' % filename
+    elif ids:
         count = 0
         for game_id in ids:
             if count >= number:
@@ -289,4 +432,3 @@ def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
                 games.append(_game)
                 count += 1
     return games
-

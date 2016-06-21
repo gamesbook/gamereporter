@@ -31,8 +31,10 @@ def parse_args():
     parser.add_argument(
         '-s', '--style',
         help='Print according to a style [summary | compact | full | excel]')
+    parser.add_argument('-i', '--input',
+                        help='Name of input JSON file')
     parser.add_argument('-f', '--file',
-                        help='Name of PDF file (default: games.pdf/xls)')
+                        help='Name of output file (default: games.pdf/xls/json)')
     parser.add_argument('-z', '--zone',
                         help='Use US to get USA date/times and paper-sizes')
     parser.add_argument('-c', '--count',
@@ -91,26 +93,34 @@ def main(conf):
             if len(ids) > 0:
                 games = bgg_games(
                     ids=ids, number=count, progress=conf.progress)
-            else:
+            elif username:
                 games = bgg_games(
                     user=username, number=count, progress=conf.progress)
+            elif conf.input:
+                games = bgg_games(
+                    filename=conf.input, number=count, progress=conf.progress)
+            else:
+                print "You need to supply IDs, or user, or a JSON filename"
+                sys.exit(1)
         except BoardGameGeekAPIError:
             print "Sorry - there was a problem accessing BGG"\
                   " (also check your game ID's)"
             sys.exit(1)
 
-    grb = GameReportBuilder(
-        user=username, games=games, filename=out_file, familys=font_family,
-        time=tzone, margin=36, size=psize, progress=conf.progress,
-        header='AlegreyaSansSCR', body='AlegreyaR')
-
-    try:
-        if conf.style:
-            grb.save_games(style=conf.style)
-        else:
-            grb.save_games(style='full')
-    except Exception as err:
-        print "\nSorry!  There was an expected error: %s" % err
+    if games:
+        grb = GameReportBuilder(
+            user=username, games=games, filename=out_file, familys=font_family,
+            time=tzone, margin=36, size=psize, progress=conf.progress,
+            header='AlegreyaSansSCR', body='AlegreyaR')
+        try:
+            if conf.style:
+                grb.save_games(style=conf.style)
+            else:
+                grb.save_games(style='full')
+        except Exception as err:
+            print "\nSorry!  There was an expected error: %s" % err
+    else:
+        print "\nSorry! No games available to create the output."
 
 
 if __name__ == "__main__":

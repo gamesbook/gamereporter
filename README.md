@@ -52,6 +52,14 @@ If you know the games you want to get a report on, pass in their boardgamegeek
 identity numbers as a list (with a space between each number); for example:
 
     python test.py -p -g 421 154638 986 320
+    
+The JSON file created can also be re-used an input (for example, you may want to
+first edit that file to alter the description given by boardgamegeek):
+
+    python test.py -i games.json -s compact
+    
+This approach also has the advantage that games will not have to be retrieved
+from boardgamegeek each time you run a report; although game images will be.
 
 # Features
 
@@ -59,6 +67,7 @@ identity numbers as a list (with a space between each number); for example:
 - Create different types of PDFs with details of each game accessed
 - Create an XLS file with summary of each game accessed
 - Create a JSON file with details of each game accessed
+- Reuse the JSON file to create a report
 - Provide some basic parameters (such as fonts and page sizes to be used)
 
 The existing code can, of course, be modified to create other layouts and report
