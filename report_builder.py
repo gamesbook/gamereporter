@@ -44,7 +44,7 @@ class GameReportBuilder(object):
 
     def __init__(self, *args, **kwargs):
         __version_info__ = ('1', '0', '0')
-        __version__ = '.'.join(__version_info__)
+        self.__version__ = __version__
         self.games = kwargs.get('games', [])  # list of 'game' objects
         self.user = kwargs.get('user', '')
         self.time = kwargs.get('time', 'UK')
