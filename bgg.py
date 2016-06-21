@@ -73,6 +73,7 @@ class BGGGameList(object):
             self.averageweight.append(self._game.averageweight)
             self.bayesaverage.append(self._game.bayesaverage)
             self.categories.append(self._game.categories)
+            self.description_short.append(self._game.description_short)
             self.description.append(self._game.description)
             self.designers.append(self._game.designers)
             self.expands.append(self._game.expands)
@@ -164,6 +165,9 @@ class BGGGame(object):
             self.description = '%s' % self._game.description
             self.description_html = '%s' % \
                 self.HTML_description(self._game.description)
+            self.description_short = '%s' % self._game.description_short
+            self.description_short_html = '%s' % \
+                self.HTML_description(self._game.description_short)
             self._designers = self._game.designers
             self.designers = ', '.join(self._game.designers)
             self._expands = self._game.expands
@@ -236,7 +240,7 @@ class BGGGame(object):
 
 
 def bgg_games(ids=None, user=None, number=None, progress=False, **kwargs):
-    """Return a list of games from BoardGameGeek; by ID or for a user.
+    """Return a list of BoardGameGeek games; source by ID or by user.
 
     Args:
         ids: list

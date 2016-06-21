@@ -3,15 +3,17 @@
 Author: Derek Hohls
 Date: June 2016
 Purpose:
-    Generate a PDF containing details of games (or game-like objects).  Basic
-    layout is a table for each game.
+    Generate a file (e.g. PDF or Excel) containing details of games (or game-
+    like objects).  Basic layout is a table-per-game or a row-per-game.
 Notes:
     Huge thanks to authors and developers of the following Python Libraries:
     * boardgamegeek
     * reportlab
+    * xlwt
 """
 # lib
 from collections import OrderedDict
+import json
 import os
 import sys
 import time
@@ -41,6 +43,8 @@ BASE = os.path.join(HOME, FONTS)
 class GameReportBuilder(object):
 
     def __init__(self, *args, **kwargs):
+        __version_info__ = ('1', '0', '0')
+        __version__ = '.'.join(__version_info__)
         self.games = kwargs.get('games', [])  # list of 'game' objects
         self.user = kwargs.get('user', '')
         self.time = kwargs.get('time', 'UK')
@@ -207,6 +211,18 @@ class GameReportBuilder(object):
         footer.drawOn(canvas, doc.leftMargin, h)
         # Release the canvas
         canvas.restoreState()
+
+    def create_json(self):
+        """
+        Create a JSON file containing games' details; entries keyed on game ID
+        """
+        game_list = {}
+        for number, game in enumerate(self.games):
+            game_list[int(game.id)] = game.__dict__
+        dump = json.dumps(game_list, indent=2, default=str)
+        _file = open(self.filename, 'w')
+        print >> _file, dump
+        _file.close()
 
     def create_xls(self):
         """
@@ -416,7 +432,7 @@ class GameReportBuilder(object):
         img = self.get_image(url, width)
         return img
 
-    def print_games(self, style='full'):
+    def save_games(self, style='full'):
         """
         Primary routine to drive creation of a reportlab PDF.
 
@@ -462,6 +478,9 @@ class GameReportBuilder(object):
         elif style == 'excel':
             print "Generating XLS Spreadsheet ... ..."
             self.create_xls()
+        elif style == 'json':
+            print "Generating a JSON File ... ... ..."
+            self.create_json()
         else:
-            print 'The table style "%s" does not exist!' % style
+            print 'The style "%s" does not exist!' % style
             sys.exit(1)

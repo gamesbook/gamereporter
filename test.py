@@ -57,8 +57,11 @@ def main(conf):
     except:
         count = 10
     out_file = conf.file or 'games.pdf'
-    if conf.style and conf.style == 'excel':
-        out_file = conf.file or 'games.xls'
+    if conf.style:
+        if conf.style == 'excel':
+            out_file = conf.file or 'games.xls'
+        elif conf.style == 'json':
+            out_file = conf.file or 'games.json'
     zone = conf.zone or 'UK'
     if zone == 'US':
         tzone = 'US'
@@ -103,9 +106,9 @@ def main(conf):
 
     try:
         if conf.style:
-            grb.print_games(style=conf.style)
+            grb.save_games(style=conf.style)
         else:
-            grb.print_games(style='full')
+            grb.save_games(style='full')
     except Exception as err:
         print "\nSorry!  There was an expected error: %s" % err
 

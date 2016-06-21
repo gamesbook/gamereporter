@@ -42,6 +42,10 @@ An XLS report for the same user, with progress:
 
     python test.py -u shurelock -c 5 -s excel -p
 
+Creating a JSON file for the same user, with progress:
+
+    python test.py -u shurelock -c 5 -s json -p
+
 **NOTE** `shurelock` is not a real user and so the program will fail!
     
 If you know the games you want to get a report on, pass in their boardgamegeek
@@ -54,6 +58,7 @@ identity numbers as a list (with a space between each number); for example:
 - Access games by ID from boardgamegeek, or games linked to a user of that site
 - Create different types of PDFs with details of each game accessed
 - Create an XLS file with summary of each game accessed
+- Create a JSON file with details of each game accessed
 - Provide some basic parameters (such as fonts and page sizes to be used)
 
 The existing code can, of course, be modified to create other layouts and report
