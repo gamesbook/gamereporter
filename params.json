@@ -1,6 +1,6 @@
 {
   "name": "Game Reporter",
   "tagline": "Generate a report about boardgames - typically from boardgamegeek.com",
-  "body": "### Welcome to the GameReporter\r\n\r\n**gamereporter** allows you to generate reports for a list of game-like objects - typically boardgames whose data can be sourced from [boardgamegeek](http://www.boardgamegeek.com).\r\n\r\nMore details and examples to come ... in the meantime, checkout the [project repository](https://github.com/gamesbook)/gamereporter/",
+  "body": "### Welcome to the GameReporter\r\n\r\nThe **gamereporter** allows you to generate reports for a list of game-like objects - typically boardgames whose data can be sourced from [boardgamegeek](http://www.boardgamegeek.com).\r\n\r\nMore details and examples to come ... in the meantime, checkout the [project repository](https://github.com/gamesbook/gamereporter/).",
   "note": "Don't delete this file! It's used internally to help with page regeneration."
 }
