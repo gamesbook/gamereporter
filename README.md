@@ -109,7 +109,7 @@ running Python 2.7.
 Create and activate a [virtualenv](https://virtualenv.pypa.io/en/stable/). 
 Clone this application into a directory, change to that directory and run:
 
-    pip install requirements.txt
+    pip install -f requirements.txt
 
 If you want to use the `report.py` program 'as is', you first need to install 
 the Alegreya TrueType fonts; see:
