@@ -37,15 +37,27 @@ progress, for an **imaginary** boardgamegeek user who is called `shurelock`,
 and who is USA-based, would use:
 
     python report.py -u shurelock -z US -c 5 -p
+    
+This would look something like:
+
+![Standard Report](images/standard.png)
 
 A summary PDF report for the same user, but with metric options & no display of
 progress while running:
 
     python report.py -u shurelock -c 5 -s summary
     
+This would look something like:
+
+![Summary Report](images/summary.png)
+    
 A compact PDF report for the same user, but with metric options & no progress:
 
     python report.py -u shurelock -c 5 -s compact
+    
+This would look something like:
+
+![Compact Report](images/compact.png)
 
 If you know the games you want to get a report on, pass in their boardgamegeek
 identity numbers as a list (with a space between each number); for example:

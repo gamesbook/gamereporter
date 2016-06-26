@@ -34,7 +34,7 @@ class Game(object):
 # example games - ALL text and images sourced from http://www.boardgamegeek.com
 
 game1 = {
-'name': 'Descent: Journeys in the Dark (Second Edition) - Labyrinth of Ruin',
+'name': '1830',
 'id': 421,
 'averageweight': 4.13,
 'percentageweight': 82.6,
