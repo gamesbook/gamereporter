@@ -19,39 +19,50 @@ a game summary (by default, into a file called `games.pdf`, or `games.xls`).
 To see the program options, run:
 
     python report.py --help
-    
+
+Be aware that accessing game details from BGG can be a slow process... a report
+with dozens - or even hundreds! - of games **will** take some time to create.
+
+## Dummy Report
+
 A test, or "debug", run with progress display, but requiring no access to 
 boardgamegeek.com, with output going to a file called `dummy.pdf`:
 
     python report.py -d -p -f dummy.pdf
 
-A 'real' example, to create a detailed PF report of 5 games for a boardgamegeek 
-user called `shurelock`, who is USA-based, while showing progress, uses:
+## PDF Reports
+
+A 'real' example, to create a detailed PF report of 5 games, while showing 
+progress, for an **imaginary** boardgamegeek user who is called `shurelock`, 
+and who is USA-based, would use:
 
     python report.py -u shurelock -z US -c 5 -p
 
-A summary PDF report for the same user, but with metric options & no progress:
+A summary PDF report for the same user, but with metric options & no display of
+progress while running:
 
     python report.py -u shurelock -c 5 -s summary
     
 A compact PDF report for the same user, but with metric options & no progress:
 
     python report.py -u shurelock -c 5 -s compact
-    
-An XLS report for the same user, with progress:
 
-    python report.py -u shurelock -c 5 -s excel -p
-
-Creating a JSON file for the same user, with progress:
-
-    python report.py -u shurelock -c 5 -s json -p
-
-**NOTE** `shurelock` is not a real user and so the program will fail!
-    
 If you know the games you want to get a report on, pass in their boardgamegeek
 identity numbers as a list (with a space between each number); for example:
 
     python report.py -p -g 421 154638 986 320
+
+## XLS Report
+
+An XLS report for the `shurelock` user, with progress displayed:
+
+    python report.py -u shurelock -c 5 -s excel -p
+
+## JSON Reports
+
+Creating a JSON file for the same user, with progress:
+
+    python report.py -u shurelock -c 5 -s json -p
     
 The JSON file created can also be re-used an input (for example, you may want to
 first edit that file to alter the description given by boardgamegeek):
@@ -59,9 +70,9 @@ first edit that file to alter the description given by boardgamegeek):
     python report.py -i games.json -s compact
     
 This approach also has the advantage that games will not have to be retrieved
-from boardgamegeek each time you run a report; although game images will be.
+from boardgamegeek each time you run a report; although the game images will be.
 
-# Features
+# Summary of Features
 
 - Access games by ID from boardgamegeek, or games linked to a user of that site
 - Create different types of PDFs with details of each game accessed
